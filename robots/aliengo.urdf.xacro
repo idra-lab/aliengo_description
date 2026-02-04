@@ -203,7 +203,7 @@
 		    <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
 		        <topicName>$(arg robot_name)/trunk_imu</topicName>
 		        <bodyName>trunk_imu</bodyName>
-		        <updateRateHZ>${1/ $(arg task_period)}</updateRateHZ>
+		        <updateRateHZ>500</updateRateHZ>
 		        <gaussianNoise>0.00001</gaussianNoise>    <!-- STD dev sqrt of covariance -->
 		        <xyzOffset>0 0 0</xyzOffset>
 		        <rpyOffset>0 0 0</rpyOffset>
