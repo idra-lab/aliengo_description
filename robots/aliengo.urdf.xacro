@@ -23,7 +23,7 @@
 
     <!-- sensors -->
     <xacro:if value="$(arg sensors)">
-        <xacro:include filename="$(find sensors_description)/urdfs/sensors/imu.gazebo.xacro"/>
+        <!--xacro:include filename="$(find sensors_description)/urdfs/sensors/imu.gazebo.xacro"/-->
     </xacro:if>
 
     <xacro:include filename="$(find aliengo_description)/urdfs/const.xacro"/>
