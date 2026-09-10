@@ -23,14 +23,18 @@
     <xacro:property name="stick_length" value="0.2"/>
 
     <!-- kinematic value -->
-    <xacro:property name="upperleg_offset" value="0.083"/>
+    <!-- hfe joint origin, y. 0.0868 in Unitree's own aliengo.urdf; this file had 0.083. -->
+    <xacro:property name="upperleg_offset" value="0.0868"/>
     <xacro:property name="upperleg_length" value="0.25"/>
     <xacro:property name="lowerleg_length" value="0.25"/>
 
     <!-- leg offset from trunk center value -->
-    <xacro:property name="leg_offset_x" value="0.2399"/>
+    <!-- haa joint origin, x. 0.2407 in Unitree's own aliengo.urdf; this file had 0.2399. -->
+    <xacro:property name="leg_offset_x" value="0.2407"/>
     <xacro:property name="leg_offset_y" value="0.051"/>
     <xacro:property name="trunk_offset_z" value="0.01675"/>
+    <!-- Only places the simplified hip collision cylinder, not a joint, so it is left as it was:
+         the 3.8 mm it differs from upperleg_offset is well inside the cylinder's 46 mm radius. -->
     <xacro:property name="hip_offset" value="0.083"/>
 
     <!-- joint limits -->
@@ -49,59 +53,85 @@
     
     <xacro:property name="KFE_position_max" value="${-37*PI/180.0}"/>
     <xacro:property name="KFE_position_min" value="${-159*PI/180.0}"/>
-    <xacro:property name="KFE_velocity_max" value="16"/>
+    <xacro:property name="KFE_velocity_max" value="15.89"/>
     <xacro:property name="KFE_effort_max" value="44.4"/>
 
+    <!-- ==========================================================================================
+         Inertial values below are Unitree's own, taken from the aliengo.urdf that the Isaac Lab
+         asset in safe_rl is built from, so that a policy trained there is deployed on the same
+         robot.  Two of the old values were not merely different but wrong: lowerleg_ixx/iyy were
+         0.006341/0.006355, and a 0.207 kg link 0.25 m long with its CoM at z = -0.1425 cannot
+         exceed 0.207 * 0.1425^2 = 0.004204 about that CoM - a bound attained only with the whole
+         mass at the single farthest point.  They were about 3x too large.  The trunk's iyy/izz were
+         likewise 2.4-2.6x Unitree's, at 1.48x what a uniform box of the trunk's outer dimensions
+         would give.
+
+         Two conventions to know when comparing against Unitree's file:
+           - Unitree models each actuator rotor as a separate link fixed to its neighbour.  A fixed
+             joint has no degree of freedom, so a physics engine merges it into its parent before
+             integrating; those rotors are therefore folded in here by the parallel-axis theorem
+             rather than added as links, which keeps this file's structure and joint names intact.
+             hip carries its thigh rotor, upperleg its calf rotor, and trunk all four hip rotors -
+             1.696 kg in total that this model previously did not have at all.
+           - The values are for the *left front* leg, which is Unitree's FL and this file's
+             canonical mirror="1" front_hind="1"; leg.xacro derives the other three by sign flips.
+             That Unitree's four legs follow exactly this mirroring pattern was checked, not
+             assumed: all four agree to 0.0 on mass, CoM and every inertia component.
+
+         Total mass goes from 23.638 kg to 24.937 kg.
+         ========================================================================================== -->
     <!-- dynamics inertial value -->
-    <!-- trunk -->
-    <xacro:property name="trunk_mass" value="12.041"/>
-    <xacro:property name="trunk_com_x" value="0.008465"/>
-    <xacro:property name="trunk_com_y" value="0.004045"/>
-    <xacro:property name="trunk_com_z" value="-0.000763"/>
-    <xacro:property name="trunk_ixx" value="0.050874"/>
-    <xacro:property name="trunk_ixy" value="-0.000451628"/>
-    <xacro:property name="trunk_ixz" value="0.000487603"/>
-    <xacro:property name="trunk_iyy" value="0.64036"/>
-    <xacro:property name="trunk_iyz" value="0.000048356"/>
-    <xacro:property name="trunk_izz" value="0.65655"/>
+    <!-- trunk + the four hip rotors -->
+    <xacro:property name="trunk_mass" value="12.228"/>
+    <xacro:property name="trunk_com_x" value="0.00839019333"/>
+    <xacro:property name="trunk_com_y" value="0.00365565227"/>
+    <xacro:property name="trunk_com_z" value="0.000259961727"/>
+    <xacro:property name="trunk_ixx" value="0.0540269213"/>
+    <xacro:property name="trunk_ixy" value="0.00168480639"/>
+    <xacro:property name="trunk_ixz" value="0.000234603335"/>
+    <xacro:property name="trunk_iyy" value="0.25875981"/>
+    <xacro:property name="trunk_iyz" value="0.000119200172"/>
+    <xacro:property name="trunk_izz" value="0.284296015"/>
 
-    <!-- hip (left front) -->
-    <xacro:property name="hip_mass" value="1.993"/>
-    <xacro:property name="hip_com_x" value="-0.022191"/>
-    <xacro:property name="hip_com_y" value="0.015144"/>
-    <xacro:property name="hip_com_z" value="-0.000015"/>
-    <xacro:property name="hip_ixx" value="0.002903894"/>
-    <xacro:property name="hip_ixy" value="-0.000071850"/>
-    <xacro:property name="hip_ixz" value="-0.000001262"/>
-    <xacro:property name="hip_iyy" value="0.004907517"/>
-    <xacro:property name="hip_iyz" value="-0.00000175"/>
-    <xacro:property name="hip_izz" value="0.005586944"/>
+    <!-- hip + its thigh rotor (left front) -->
+    <xacro:property name="hip_mass" value="2.139"/>
+    <xacro:property name="hip_com_x" value="-0.0206763268"/>
+    <xacro:property name="hip_com_y" value="0.0161443628"/>
+    <xacro:property name="hip_com_z" value="-1.39761571e-05"/>
+    <xacro:property name="hip_ixx" value="0.00255930704"/>
+    <xacro:property name="hip_ixy" value="-0.000642292708"/>
+    <xacro:property name="hip_ixz" value="1.89971884e-06"/>
+    <xacro:property name="hip_iyy" value="0.00413156697"/>
+    <xacro:property name="hip_iyz" value="1.25409415e-06"/>
+    <xacro:property name="hip_izz" value="0.00432770595"/>
 
-    <!-- upperleg -->
-    <xacro:property name="upperleg_mass" value="0.639"/>
-    <xacro:property name="upperleg_com_x" value="-0.005607"/>
-    <xacro:property name="upperleg_com_y" value="-0.003877"/>
-    <xacro:property name="upperleg_com_z" value="-0.048199"/>
-    <xacro:property name="upperleg_ixx" value="0.005666803"/>
-    <xacro:property name="upperleg_ixy" value="0.000003597"/>
-    <xacro:property name="upperleg_ixz" value="0.000491446"/>
-    <xacro:property name="upperleg_iyy" value="0.005847229"/>
-    <xacro:property name="upperleg_iyz" value="0.000010086"/>
-    <xacro:property name="upperleg_izz" value="0.000369811"/>
+    <!-- upperleg + its calf rotor (left front) -->
+    <xacro:property name="upperleg_mass" value="0.771"/>
+    <xacro:property name="upperleg_com_x" value="-0.00464704669"/>
+    <xacro:property name="upperleg_com_y" value="-0.0202824942"/>
+    <xacro:property name="upperleg_com_z" value="-0.0399470311"/>
+    <xacro:property name="upperleg_ixx" value="0.00557799484"/>
+    <xacro:property name="upperleg_ixy" value="6.90628021e-05"/>
+    <xacro:property name="upperleg_ixz" value="-0.000348439756"/>
+    <xacro:property name="upperleg_iyy" value="0.00473442611"/>
+    <xacro:property name="upperleg_iyz" value="0.000614508456"/>
+    <xacro:property name="upperleg_izz" value="0.00149356151"/>
 
-    <!-- lowerleg -->
+    <!-- lowerleg (left front); the foot is a separate link below -->
     <xacro:property name="lowerleg_mass" value="0.207"/>
     <xacro:property name="lowerleg_com_x" value="0.002781"/>
-    <xacro:property name="lowerleg_com_y" value="0.000063"/>
+    <xacro:property name="lowerleg_com_y" value="6.3e-05"/>
     <xacro:property name="lowerleg_com_z" value="-0.142518"/>
-    <xacro:property name="lowerleg_ixx" value="0.006341369"/>
-    <xacro:property name="lowerleg_ixy" value="-0.000000003"/>
-    <xacro:property name="lowerleg_ixz" value="-0.000087951"/>
-    <xacro:property name="lowerleg_iyy" value="0.006355157"/>
-    <xacro:property name="lowerleg_iyz" value="-0.000001336"/>
-    <xacro:property name="lowerleg_izz" value="0.000039188"/>
+    <xacro:property name="lowerleg_ixx" value="0.002129279"/>
+    <xacro:property name="lowerleg_ixy" value="3.9e-08"/>
+    <xacro:property name="lowerleg_ixz" value="5.757e-06"/>
+    <xacro:property name="lowerleg_iyy" value="0.002141463"/>
+    <xacro:property name="lowerleg_iyz" value="-5.16e-07"/>
+    <xacro:property name="lowerleg_izz" value="3.7583e-05"/>
 
     <!-- foot -->
+    <!-- leg.xacro derives the foot inertia from the sphere formula (2m/5)r^2, which comes out at
+         1.6854e-05 - exactly Unitree's value, so nothing to change here. -->
     <xacro:property name="foot_mass" value="0.06"/>
 
 </robot>
