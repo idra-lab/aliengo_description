@@ -11,7 +11,7 @@
 	<!-- send hyq urdf to param server and spawn it -->
 	<include file="$(find aliengo_description)/launch/upload.launch">	</include>
 
-	<node name="robot_hardware_interface" pkg="aliengo_hardware_interface" type="ros_control_node" respawn="false" output="screen"/>
+	<node name="robot_hardware_interface" pkg="aliengo_hardware_interface" type="aliengo_ros_control_node" respawn="false" output="screen"/>
 	
 	 <rosparam file="$(find ros_impedance_controller)/config/joint_state_publisher.yaml" ns="/aliengo" command="load"/>
 		
