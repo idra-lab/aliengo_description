@@ -9,7 +9,7 @@
             <parent link="trunk"/>
             <child link="${name}_hip"/>
             <axis xyz="1 0 0"/>
-            <dynamics damping="${damping}" friction="${friction}"/>
+            <dynamics damping="${joint_viscous['haa']}" friction="${joint_coulomb['haa']}"/>
             <xacro:if value="${(mirror_dae == True)}">
                 <limit effort="${HAA_effort_max}" velocity="${HAA_velocity_max}" lower="${HAA_position_min}" upper="${HAA_position_max}"/>
             </xacro:if>
@@ -74,7 +74,7 @@
             <parent link="${name}_hip"/>
             <child link="${name}_upperleg"/>
             <axis xyz="0 1 0"/>
-            <dynamics damping="${damping}" friction="${friction}"/>
+            <dynamics damping="${joint_viscous['hfe']}" friction="${joint_coulomb['hfe']}"/>
             <limit effort="${HFE_effort_max}" velocity="${HFE_velocity_max}"  lower="${HFE_position_min}" upper="${HFE_position_max}"/>
             
         </joint>
@@ -113,7 +113,7 @@
             <parent link="${name}_upperleg"/>
             <child link="${name}_lowerleg"/>
             <axis xyz="0 1 0"/>
-            <dynamics damping="${damping}" friction="${friction}"/>
+            <dynamics damping="${joint_viscous['kfe']}" friction="${joint_coulomb['kfe']}"/>
             <limit effort="${KFE_effort_max}" velocity="${KFE_velocity_max}" lower="${KFE_position_min}" upper="${KFE_position_max}"/>
         </joint>
 
@@ -169,6 +169,15 @@
                     izz="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}"/>             
             </inertial>
         </link>
+
+        <!-- Reflected rotor inertia (const.xacro), built from gazebo_plugins/joint_armature_plugin -->
+        <gazebo>
+            <plugin name="joint_armature_${name}" filename="libjoint_armature_plugin.so">
+                <joint name="${name}_haa_joint">${joint_armature['haa']}</joint>
+                <joint name="${name}_hfe_joint">${joint_armature['hfe']}</joint>
+                <joint name="${name}_kfe_joint">${joint_armature['kfe']}</joint>
+            </plugin>
+        </gazebo>
 
     </xacro:macro>
 </robot>
