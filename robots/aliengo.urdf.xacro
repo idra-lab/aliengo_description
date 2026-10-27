@@ -214,4 +214,11 @@
 	    </gazebo>
     </xacro:if>
 
+    <!-- Body contacts damped like the feet: undamped, the body chatters on the ground while the
+         robot lies and the accelerometer calibration never settles. -->
+    <gazebo reference="trunk">
+        <kp>1000000.0</kp>
+        <kd>${contact_kd}</kd>
+    </gazebo>
+
 </robot>

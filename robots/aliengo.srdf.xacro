@@ -64,6 +64,22 @@
         <joint name="rh_kfe_joint" value="-1.4"/>
     </group_state>
     
+    <!-- on the belly, legs folded, feet just off the ground (rl_quadruped spawn) -->
+    <group_state group="chains" name="lieDown">
+        <joint name="lf_haa_joint" value="0.65"/>
+        <joint name="lf_hfe_joint" value="1.38"/>
+        <joint name="lf_kfe_joint" value="-2.75"/>
+        <joint name="rf_haa_joint" value="-0.65"/>
+        <joint name="rf_hfe_joint" value="1.38"/>
+        <joint name="rf_kfe_joint" value="-2.75"/>
+        <joint name="lh_haa_joint" value="0.65"/>
+        <joint name="lh_hfe_joint" value="1.38"/>
+        <joint name="lh_kfe_joint" value="-2.75"/>
+        <joint name="rh_haa_joint" value="-0.65"/>
+        <joint name="rh_hfe_joint" value="1.38"/>
+        <joint name="rh_kfe_joint" value="-2.75"/>
+    </group_state>
+
     <group_state group="chains" name="home">
         <joint name="lf_haa_joint" value="0.80"/>
         <joint name="lf_hfe_joint" value="1.70"/>
